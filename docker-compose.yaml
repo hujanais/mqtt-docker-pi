@@ -13,6 +13,18 @@ services:
       - ./mosquitto/data:/mosquitto/data
       - ./mosquitto/log:/mosquitto/log
 
+  homeassistant:
+    container_name: hass
+    image: homeassistant/home-assistant
+    restart: always
+    privileged: true
+    environment:
+      - TZ=america/new_york
+    volumes:
+      - ./hass/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    network_mode: host
+
   portainer:
     container_name: portainer
     image: portainer/portainer-ce:latest
