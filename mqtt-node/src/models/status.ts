@@ -1,4 +1,4 @@
 export default interface IStatus {
-  isOk: boolean;
+  utcTime: string;
   message: string;
 }
