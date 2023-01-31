@@ -3,7 +3,8 @@ import { stringify } from 'querystring';
 import IStatus from '../models/status';
 import { MongoDBService } from './mongodb-service';
 
-const MQTT_TOPIC = 'hass-topic';
+const MQTT_TOPIC = process.env.MQTT_TOPIC || '';
+const MQTT_SERVER = process.env.MQTT_SERVER || '';
 const BUFFER_SIZE = 50;
 
 class MqttService {
@@ -11,11 +12,10 @@ class MqttService {
   private statusBuffer: IStatus[] = [];
 
   constructor() {
-    let client = mqtt.connect('http://192.168.1.70:9001');
+    let client = mqtt.connect(MQTT_SERVER);
 
     client.on('connect', () => {
-      this.addStatus('mqtt-connection-established');
-      console.log('mqtt-connection-established');
+      this.addStatus(`mqtt connection established with ${MQTT_SERVER}`);
       client.subscribe(MQTT_TOPIC, (err) => {
         if (err) {
           this.addStatus(`topic=${MQTT_TOPIC} subscription failed with ${err}`);
@@ -46,7 +46,7 @@ class MqttService {
       this.statusBuffer.pop();
     }
 
-    console.log(newStatusItem, this.statusBuffer.length);
+    console.log(`${newStatusItem.utcTime} - ${newStatusItem.message}`);
   };
 }
 

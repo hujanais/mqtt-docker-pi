@@ -5,6 +5,7 @@ npm install express
 npm install @types/express --save-dev
 npm install nodemon --save-dev
 npm install ts-node --save-dev
+npm install dotenv
 npm install mqtt
 
 npx tsc --init --rootDir src --outDir dist \

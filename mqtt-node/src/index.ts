@@ -1,5 +1,8 @@
 import express, { NextFunction, Request, Response } from 'express';
 import path from 'path';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 const app = express();
 import apiRouter from './routes/mqtt-route';
 import mqttService from './services/mqtt-service';
