@@ -1,0 +1,14 @@
+npm init
+npm install typescript --save-dev
+npm install @types/node --save-dev
+npm install express
+npm install @types/express --save-dev
+npm install nodemon --save-dev
+npm install ts-node --save-dev
+npm install mqtt
+
+npx tsc --init --rootDir src --outDir dist \
+--esModuleInterop --resolveJsonModule --lib es6 \
+--module commonjs --allowJs true --noImplicitAny true
+
+create /src/index.ts
