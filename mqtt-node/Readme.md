@@ -7,6 +7,7 @@ npm install nodemon --save-dev
 npm install ts-node --save-dev
 npm install dotenv
 npm install mqtt
+npm install axios
 
 npx tsc --init --rootDir src --outDir dist \
 --esModuleInterop --resolveJsonModule --lib es6 \
@@ -23,3 +24,7 @@ create /src/index.ts
 ### MQTT info
 
 topic = hass-topic
+
+### MongoDB connectivity.
+
+Using MongDB data api.

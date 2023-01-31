@@ -1,4 +1,4 @@
 export default interface IStatus {
-  utcTime: string;
+  localTimeString: string;
   message: string;
 }

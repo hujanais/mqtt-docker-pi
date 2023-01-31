@@ -1,5 +1,5 @@
 import * as mqtt from 'mqtt';
-import { stringify } from 'querystring';
+import { IHassData } from '../models/data';
 import IStatus from '../models/status';
 import { MongoDBService } from './mongodb-service';
 
@@ -25,8 +25,12 @@ class MqttService {
       });
     });
 
-    client.on('message', (topic, message) => {
+    client.on('message', async (topic: string, message: IHassData) => {
       this.addStatus(`topic = ${topic}, message = ${message}`);
+      if (topic === MQTT_TOPIC) {
+        const resp = await this.mongoApi.postData(message.kwh1, message.kwh2, message.kwh3, message.kwh4);
+        this.addStatus(`http status = ${resp}`);
+      }
     });
   }
 
@@ -35,8 +39,8 @@ class MqttService {
   };
 
   addStatus = (message: string) => {
-    const newStatusItem = {
-      utcTime: new Date().toUTCString(),
+    const newStatusItem: IStatus = {
+      localTimeString: new Date().toLocaleString(),
       message: message,
     };
 
@@ -46,7 +50,7 @@ class MqttService {
       this.statusBuffer.pop();
     }
 
-    console.log(`${newStatusItem.utcTime} - ${newStatusItem.message}`);
+    console.log(`${newStatusItem.localTimeString} - ${newStatusItem.message}`);
   };
 }
 
