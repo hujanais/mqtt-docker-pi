@@ -1,13 +1,12 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import path from 'path';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
 import apiRouter from './routes/mqtt-route';
-import mqttService from './services/mqtt-service';
 
-const port = 3000;
+const port = +(process.env.PORT || '3000');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
