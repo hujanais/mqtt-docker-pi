@@ -19,14 +19,15 @@ export class MongoDBService {
       collection: COLLECTION,
       document: {
         timestamp: new Date().valueOf(),
-        kwh1,
-        kwh2,
-        kwh3,
-        kwh4,
+        kwh1: kwh1,
+        kwh2: kwh2,
+        kwh3: kwh3,
+        kwh4: kwh4,
       },
     };
 
-    const response = await axios
+    let message = '';
+    await axios
       .post(url, document, {
         headers: {
           'Content-Type': 'application/json',
@@ -34,15 +35,13 @@ export class MongoDBService {
           'api-key': APIKEY,
         },
       })
+      .then((resp) => {
+        message = resp.status.toString();
+      })
       .catch((err) => {
-        console.log(err);
-        return err;
+        message = err.toString();
       });
 
-    if (response) {
-      return response.status;
-    } else {
-      return 'nada';
-    }
+    return message;
   };
 }

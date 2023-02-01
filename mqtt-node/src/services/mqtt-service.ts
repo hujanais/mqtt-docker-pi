@@ -25,11 +25,17 @@ class MqttService {
       });
     });
 
-    client.on('message', async (topic: string, message: IHassData) => {
-      this.addStatus(`topic = ${topic}, message = ${message}`);
+    client.on('message', async (topic: string, message: Buffer) => {
       if (topic === MQTT_TOPIC) {
-        const resp = await this.mongoApi.postData(message.kwh1, message.kwh2, message.kwh3, message.kwh4);
-        this.addStatus(`http status = ${resp}`);
+        const hassData: IHassData = JSON.parse(message.toString());
+        await this.mongoApi
+          .postData(hassData.kwh1, hassData.kwh2, hassData.kwh3, hassData.kwh4)
+          .then((resp) => {
+            this.addStatus(`topic = ${topic}, message = ${message}. statuscode = ${resp}`);
+          })
+          .catch((err) => {
+            this.addStatus(`topic = ${topic}, message = ${message}. error = ${err}`);
+          });
       }
     });
   }
