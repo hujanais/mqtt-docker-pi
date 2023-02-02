@@ -1,0 +1,44 @@
+- id: '1675035245009'
+  alias: Power Upload
+  description: upload power usage 4x per day
+  trigger:
+  - platform: time
+    at: 00:00:00
+  - platform: time
+    at: 03:00:00
+  - platform: time
+    at: 06:00:00
+  - platform: time
+    at: 09:00:00
+  - platform: time
+    at: '12:00:00'
+  - platform: time
+    at: '15:00:00'
+  - platform: time
+    at: '18:00:00'
+  - platform: time
+    at: '21:00:00'
+  condition: []
+  action:
+  - service: mqtt.publish
+    data:
+      topic: hass-topic
+      payload_template: "{ \"kwh1\": {{states('sensor.kauf_plug_total_daily_energy')}},\n
+        \ \"kwh2\": {{states('sensor.kauf_plug_total_daily_energy_2')}},\n  \"kwh3\":
+        {{states('sensor.kauf_plug_total_daily_energy_3')}},\n  \"kwh4\": {{states('sensor.kauf_plug_total_daily_energy_4')}}}\n"
+  mode: single
+- id: '1675047469289'
+  alias: test
+  description: ''
+  trigger:
+  - platform: mqtt
+    topic: command
+  condition: []
+  action:
+  - service: mqtt.publish
+    data:
+      topic: hass-topic
+      payload_template: "{ \"kwh1\": {{states('sensor.kauf_plug_total_daily_energy')}},\n
+        \ \"kwh2\": {{states('sensor.kauf_plug_total_daily_energy_2')}},\n  \"kwh3\":
+        {{states('sensor.kauf_plug_total_daily_energy_3')}},\n  \"kwh4\": {{states('sensor.kauf_plug_total_daily_energy_4')}}}\n"
+  mode: single
