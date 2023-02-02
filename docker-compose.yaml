@@ -1,6 +1,14 @@
 version: '3'
 
 services:
+  mqtt-node:
+    build:
+      context: ./mqtt-node
+      dockerfile: Dockerfile
+    container_name: mqtt-node
+    restart: always
+    ports:
+      - 3000:3000
   mqtt:
     container_name: mosquitto
     image: eclipse-mosquitto
