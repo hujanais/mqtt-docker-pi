@@ -1,7 +1,5 @@
 ## MQTT-Docker setup on RaspberryPi
 
-https://www.youtube.com/watch?v=Bz2JYxbkmuY&t=1s
-
 ### Docker tip
 
 docker ps -aq | xargs docker stop | xargs docker rm
@@ -33,7 +31,9 @@ sudo systemctl enable docker
 ```
 git clone XXX my-folder
 cd my-folder
-docker-compose up -d
+docker-compose -f docker-compose.yaml up -d
+# check to see you have 4 containers running.
+docker ps
 
 ```
 
