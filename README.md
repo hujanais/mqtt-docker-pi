@@ -4,7 +4,7 @@
 
 I have a bunch of environmental sensors and in my home and recently added 4 Kaufha PF12 smart plugs. I am only interested in using them to begin monitoring power usage of some big items in the house. In the past, I have always pushed data directly from ESP8266s to my serverless Node running on Vercel. That in turn pushes data to a cloud hosted MongoDB database and an Angular dashboard. [yes, thankfully all that can be done for free].
 
-Ok enough backstory, with the recent addition of the smart plugs and after discussion with my buddy John [#BostonEnginerd](https://bostonenginerd.com/), he suggested that I try out HomeAssistant. Finally this is what I wanted to acheive. Also to have a clean deployable, shareable and isolated solution, I chose to dockerize everything and to run it on any spare Linux box I can find, in my case an old Raspberry-PI3b. You can choose other hardware.
+Ok enough backstory, with the recent addition of the smart plugs and after discussions with my buddy John [#BostonEnginerd](https://bostonenginerd.com/), he suggested that I try out HomeAssistant. Finally this is what I wanted to acheive. Also to have a clean deployable, shareable and isolated solution, I chose to dockerize everything and to run on any spare Linux box I can find, in my case an old Raspberry-PI3b. You can choose other hardware.
 
 Hope this helps and inspires. Enjoy!
 
