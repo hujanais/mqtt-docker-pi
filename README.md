@@ -1,8 +1,30 @@
 ## MQTT-Docker setup on RaspberryPi
 
-### Docker tip
+### Overview
 
-docker ps -aq | xargs docker stop | xargs docker rm
+I have a bunch of environmental sensors and in my home and recently added 4 Kaufha PF12 smart plugs. I am only interested in using them to begin monitoring power usage of some big items in the house. In the past, I have always pushed data directly from ESP8266s to my serverless Node running on Vercel. That in turn pushes data to a cloud hosted MongoDB database and an Angular dashboard. [yes, thankfully all that can be done for free].
+
+Ok enough backstory, with the recent addition of the smart plugs and after discussion with my buddy John [#BostonEnginerd](https://bostonenginerd.com/), he suggested that I try out HomeAssistant. Finally this is what I wanted to acheive. Also to have a clean deployable, shareable and isolated solution, I chose to dockerize everything and to run it on any spare Linux box I can find, in my case an old Raspberry-PI3b. You can choose other hardware.
+
+Hope this helps and inspires. Enjoy!
+
+```
+ +---------+ 	+----------------------------------------------+
+    | Kaufha  | |               RASPBERRY PI-3b                |
+    | plugs   | |  +------------------------------------------+|
+    +---------+ |  |       Portainer Docker Orchestrator      ||
+         ^      |  |               (Optional)                 ||
+         |      |  +------------------------------------------+|     +----------------+   +------------------+
+         |      |  +----------------+  +--------------------+  |<--->|Hosted MongoDB  |<->|Angular Dashboard |
+         +----->|  |  HomeAssistant |  |   Mosquitto-MQTT   |  |     |+ DataAPI       |   |                  |
+                |  |                |  |   Broker           |  |     +----------------+   +------------------+
+                |  +----------------+  +--------------------+  |
+                |                      +--------------------+  |
+                |                      |    Node-TS         |  |
+                |                      |    Relay Server    |  |
+                |                      +--------------------+  |
+                +----------------------------------------------+
+```
 
 ### Install Git [if missing]
 
@@ -31,133 +53,55 @@ sudo systemctl enable docker
 ```
 git clone XXX my-folder
 cd my-folder
-docker-compose -f docker-compose.yaml up -d
-# check to see you have 4 containers running.
-docker ps
+### you should get a directory structure like so,
+└── mqtt-docker-pi
+├── docker-compose.yaml.# the docker-compose file that orchestrates the entire install
+├── hass				# An empty folder required for volume mapping for home-assistant
+│ └── config
+├── mosquitto			# The folder required for volume mapping for mosquitto-mqtt
+│ ├── config
+│ │ └── mosquitto.conf	# pre-populated configuration file that you can modify
+│ ├── data
+│ └── log
+├── mqtt-node			# the mqtt-node relay server that pushes data to the mongo cloud api
+│ ├── ... express node files not shown for brevity
+│ ├── Dockerfile
+└── README.md
 
+# make sure you cd into the folder that contains the docker-compose.yaml folder
+ 1. docker-compose -f docker-compose.yaml up -d
+ 2. docker ps to check for running containers. you should have 4.
 ```
 
-### Setup eclipse/mosquitto folders
+The portainer service is optional and I added it for completeness because it provides a web dashboard in managing all your docker containers without messing around with the commands. Personally for me, I find it easier to just use command line.
 
-create 3 directories.
-/mosquitto/config
-/mosquitto/data
-/mosquitto/log
+To access portainer : http://your-pi-ip:9000
+To access home-assistant: http://your-pi-ip:8123
 
-Create the mqtt configuration file /config/mosquitto.conf
+### Home Assistant
 
-```
-cd /mosquitto/config
-sudo nano mosquitto.conf and enter the following
-
-#----- Begin -------
-persistence true
-persistence_location /mosquitto/data/
-log_dest file /mosquitto/log/mosquitto.log
-
-allow_anonymous true
-listener 1883
-listener 9001
-#----- End ------
-```
-
-### Install Portainer
-
-1.  sudo docker pull portainer/portainer-ce:latest
-2.  mkdir /portainer/portainer_data folder
-
-### Directory check
-
-A quick checkpoint to make sure your directory structure is as follows,
+The mqtt-node server is listening specifically to topic = hass-topic.  
+The automation.yaml for home-assistant contains the following,
 
 ```
-your-root
-	- docker-compose.yaml
-	- mosquitto
-		- config
-			- mosquitto.conf
-		- data
-		- log
-	- portainer
-		- portainer_data
+- service: mqtt.publish
+	data:
+	topic: hass-topic
+payload_template: "{ \"kwh1\": {{states('sensor.kauf_plug_total_daily_energy')}},\n
+\ \"kwh2\": {{states('sensor.kauf_plug_total_daily_energy_2')}},\n \"kwh3\":
+{{states('sensor.kauf_plug_total_daily_energy_3')}},\n \"kwh4\": {{states('sensor.kauf_plug_total_daily_energy_4')}}}\n"
 ```
 
-### Setup docker-compose for Mosquitto and Portainer
+### Conclusion
 
-Please note that Portainer is optional and just a docker dashboard for those who would rather deal with docker containers via a web-interface. However for a simple setup with just a few containers, I personally just use the docker commands in terminal.
+Thanks for reading and I hope this helps you our on your home automation journey.
 
-create docker-compose.yaml
+### Some useful Docker commands
 
-```
-services:
-##Mosquitto
-    mqtt:
-        container_name: mosquitto
-        image: eclipse-mosquitto
-        restart: always
-        ports:
-            - "1883:1883"
-            - "9001:9001"
-        volumes:
-            - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
-            - ./mosquitto/data:/mosquitto/data
-            - ./mosquitto/log:/mosquitto/log
+If you are not using portainer and want to user command line, here are some useful commands.
 
-    portainer:
-        container_name: portainer
-        image: portainer/portainer-ce:latest
-        ports:
-            - 9000:9000
-        volumes:
-            - /portainer/portainer_data:/data
-            - /var/run/docker.sock:/var/run/docker.sock
-        restart: always
-```
-
-### Create the docker container using docker-compose
-
-1.  docker-compose -f docker-compose.yaml up -d
-2.  docker ps to check for running container
-
-### Portainer [optional]
-
-1. Now you can access portainer from remote computer via http://pi-ip:9000
-2. Initially you will need to set up a new user and password.
-
-### Setup authentication for MQTT Broker [recommended but optional]
-
-1. This step can only be done after your MQTT broker has been setup from the previous steps.
-2. On your Pi, docker ps to list the 2 docker containers that are running, one should be the mqtt and one the portainer.
-3. Now you will need to interactively shell into the MQTT container to setup the user-password.
-
-```
-	docker exec -it mqtt sh
-	mosquitto_passwd -c /mosquitto/config/mosquitto.passwd user-id
-	exit
-	cd /mosquitto/config ⇒ you should have a new file called mosquitto.passwd
-	sudo nano mosquitto.conf and update the following
-
-	#----- Begin -------
-
-	persistence true
-	persistence_location /mosquitto/data/
-	log_dest file /mosquitto/log/mosquitto.log
-
-	# add these new items.
-	password_file /mosquitto/config/mosquitto.passwd
-	allow_anonymous false
-	listener 1883
-	listener 9001
-	protocol websockets
-
-	#----- End ------
-```
-
-4. Now go over to portainer to re-start the MQTT container or just use command line in your Pi
-
-```
-# docker restart [containerId/containerName] and in my case
-docker restart mqtt
-```
-
-### Test the MQTT broker
+1. docker ps -aq | xargs docker stop | xargs docker rm // To stop and delete all docker containers.
+2. docker rmi container-id // To delete docker images
+3. docker ps // list all running containers
+4. docker ps -a // list all running and stopped containers
+5. docker logs container-id // useful to look at logs of a container
