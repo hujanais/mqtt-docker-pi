@@ -8,23 +8,7 @@ Ok enough backstory, with the recent addition of the smart plugs and after discu
 
 Hope this helps and inspires. Enjoy!
 
-```
- +---------+ 	+----------------------------------------------+
-    | Kaufha  | |               RASPBERRY PI-3b                |
-    | plugs   | |  +------------------------------------------+|
-    +---------+ |  |       Portainer Docker Orchestrator      ||
-         ^      |  |               (Optional)                 ||
-         |      |  +------------------------------------------+|     +----------------+   +------------------+
-         |      |  +----------------+  +--------------------+  |<--->|Hosted MongoDB  |<->|Angular Dashboard |
-         +----->|  |  HomeAssistant |  |   Mosquitto-MQTT   |  |     |+ DataAPI       |   |                  |
-                |  |                |  |   Broker           |  |     +----------------+   +------------------+
-                |  +----------------+  +--------------------+  |
-                |                      +--------------------+  |
-                |                      |    Node-TS         |  |
-                |                      |    Relay Server    |  |
-                |                      +--------------------+  |
-                +----------------------------------------------+
-```
+ ![Architecture-image](./mqtt-docker.png)
 
 ### Install Git [if missing]
 
