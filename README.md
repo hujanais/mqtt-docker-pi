@@ -76,6 +76,10 @@ payload_template: "{ \"kwh1\": {{states('sensor.kauf_plug_total_daily_energy')}}
 {{states('sensor.kauf_plug_total_daily_energy_3')}},\n \"kwh4\": {{states('sensor.kauf_plug_total_daily_energy_4')}}}\n"
 ```
 
+### Adding Kaufha to ESPHome
+1. In the http://ha-server:8123/config/integrations screen click on the ![Add Integration button](./esphome.png)
+2. Then you will be able to add the newly discovered ESPHome enable device.
+
 ### Conclusion
 
 Thanks for reading and I hope this helps you our on your home automation journey.
