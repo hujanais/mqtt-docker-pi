@@ -1,0 +1,31 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# REST API
+rest_command:
+  update_powerplugs:
+    url: "https://data.mongodb-api.com/app/data-ypnqq/endpoint/data/v1/action/insertOne"
+    method: POST
+    headers:
+      content-type: "application/json"
+      api-key: "ZqcXWJd3eShHzdWYtZOrXcS99HbIR29QEGZhUxF3y9AwCvcntmJo4E8BkXcFSdR3"
+      Access-Control-Request-Headers: "*"
+      payload: '{"power1": "{{ power1 }}", "power2": "{{ power2 }}"'
+
+logger:
+  default: info
+  logs:
+    homeassistant.components.rest_command: debug
