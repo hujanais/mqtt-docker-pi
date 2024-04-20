@@ -9,6 +9,10 @@ export interface IDocument {
     kwh2: number;
     kwh3: number;
     kwh4: number;
+    kwh5: number;
+    kwh6: number;
+    kwh7: number;
+    kwh8: number;
   };
 }
 
@@ -18,4 +22,8 @@ export interface IHassData {
   kwh2: number;
   kwh3: number;
   kwh4: number;
+  kwh5: number;
+  kwh6: number;
+  kwh7: number;
+  kwh8: number;
 }

@@ -29,7 +29,7 @@ class MqttService {
       if (topic === MQTT_TOPIC) {
         const hassData: IHassData = JSON.parse(message.toString());
         await this.mongoApi
-          .postData(hassData.kwh1, hassData.kwh2, hassData.kwh3, hassData.kwh4)
+          .postData(hassData.kwh1, hassData.kwh2, hassData.kwh3, hassData.kwh4, hassData.kwh5, hassData.kwh6, hassData.kwh7, hassData.kwh8)
           .then((resp) => {
             this.addStatus(`topic = ${topic}, message = ${message}. statuscode = ${resp}`);
           })
